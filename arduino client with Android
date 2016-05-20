@@ -1,0 +1,120 @@
+package com.example.manel.mimicontrole;
+
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.StrictMode;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Toast;
+
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+
+
+public class MainActivity extends ActionBarActivity implements OnClickListener {
+
+    OkHttpClient okHttpClient;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        View Go = findViewById(R.id.GoMimi);
+        View Stop = findViewById(R.id.StopMimi);
+        View TurnL = findViewById(R.id.TurnL);
+        View TurnR = findViewById(R.id.TurnR);
+
+
+        okHttpClient = new OkHttpClient();
+
+       Go.setOnClickListener(this);
+        Stop.setOnClickListener(this);
+        TurnL.setOnClickListener(this);
+        TurnR.setOnClickListener(this);
+
+    }
+
+
+    public void commandArduino(String url){
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+            Call call = okHttpClient.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+
+                    Log.e("XXXXXXXXX",response.body().string());
+                }
+            });
+
+
+    }
+
+    public void onClick(View thisView) {
+        switch (thisView.getId()) {
+            case R.id.GoMimi:
+                commandArduino("http://192.168.0.13/?cmd=1");
+                Toast.makeText(getApplicationContext(), "MimiGo", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.StopMimi:
+                commandArduino("http://192.168.0.13/?cmd=2");
+                Toast.makeText(getApplicationContext(), "MimiStop", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.TurnL:
+                commandArduino("http://192.168.0.13/?cmd=3");
+                Toast.makeText(getApplicationContext(), "TurnL", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.TurnR:
+                commandArduino("http://192.168.0.13/?cmd=4");
+                Toast.makeText(getApplicationContext(), "TurnR", Toast.LENGTH_LONG).show();
+                break;
+
+        }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
