@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
+    android:name="com.example.manel.mimicontrole.MainActivityFragment"
+    tools:layout="@layout/fragment_main" android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<TextView
+    android:id="@+id/textView1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:text="Mimi Controler"
+    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+<LinearLayout
+    android:id="@+id/linearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/textView1"
+    android:layout_below="@+id/textView1"
+    android:orientation="horizontal" >
+
+    <Button
+        android:id="@+id/GoMimi"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_weight="0.39"
+        android:text="Go Mimi" />
+
+    <Button
+        android:id="@+id/StopMimi"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_weight="0.39"
+        android:text="Stop Mimi" />
+</LinearLayout>
+
+<LinearLayout
+    android:id="@+id/linearLayout2"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/linearLayout1"
+    android:layout_alignRight="@+id/linearLayout1"
+    android:layout_below="@+id/linearLayout1"
+    android:orientation="horizontal" >
+
+    <Button
+        android:id="@+id/TurnL"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_weight="0.39"
+        android:text="Turn Left" />
+
+    <Button
+        android:id="@+id/TurnR"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_weight="0.39"
+        android:text="Turn Right" />
+</LinearLayout>
+    </RelativeLayout>
