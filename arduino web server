@@ -1,0 +1,185 @@
+
+#include <SPI.h>
+#include <Ethernet.h>
+ #define come1 6
+ #define come2 7
+ #define turn1 8
+ #define turn2 9
+ #define En1 5 // L293D enable pin pour le premier moteur //Pin de controleur qui  active mouteur 1
+#define En2 4 
+#define trig 8
+#define echo 9
+int seuil = 30; // distance minimale pour laquelle on accepte un obstacle
+int distance =0;
+String readString;
+int temps =0;
+int Mspeed =500;
+byte mac[] =  {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+IPAddress ip(192, 168, 0, 13);
+
+EthernetServer server(80);
+
+void setup() {
+  // Open serial communications and wait for port to open:
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+    analogWrite(En1, Mspeed);
+   analogWrite(En2,0);
+pinMode(come1, OUTPUT);
+   pinMode(come2, OUTPUT);
+   pinMode(turn1, OUTPUT);
+   pinMode(turn2, OUTPUT);
+   pinMode(En1, OUTPUT);
+   pinMode(En2, OUTPUT); 
+   pinMode(trig, OUTPUT); 
+  // pinMode(echo, INPUT);
+  // digitalWrite(trig, LOW); 
+
+  // start the Ethernet connection and the server:
+  Ethernet.begin(mac, ip);
+  server.begin();
+  Serial.print("server is at ");
+  Serial.println(Ethernet.localIP());
+}
+
+void look (void){  // évaluation de la distance de l'obstacle
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  temps = pulseIn(echo,HIGH);
+  distance = temps * 340/(2*10000); // pourquoi cette vitesse ?
+
+  }
+void loop() {
+  // listen for incoming clients
+  EthernetClient client = server.available();
+  if (client) {
+    Serial.println("new client");
+    // an http request ends with a blank line
+    boolean currentLineIsBlank = true;
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+   //     if (readString.length() < 100) {
+          //store characters to string
+         readString += c;
+          //Serial.print(c);
+         //}
+        // if you've gotten to the end of the line (received a newline
+        // character) and the line is blank, the http request has ended,
+        // so you can send a reply
+        if (c == '\n' && currentLineIsBlank) {
+  //        Serial.println(readString); 
+          // send a standard http response header
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-Type: text/html");
+          client.println("Connection: close");  // the connection will be closed after completion of the response
+          client.println("Refresh: 5");  // refresh the page automatically every 5 sec
+          client.println();
+          client.println("<!DOCTYPE HTML>");
+          client.println("<HTML>");
+           client.println("<HEAD>");
+      client.println("<meta name='apple-mobile-web-app-capable' content='yes' />");
+           client.println("<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />");
+           client.println("<link rel='stylesheet' type='text/css' href='http://randomnerdtutorials.com/ethernetcss.css' />");
+           client.println("<TITLE>Mimi Transportor</TITLE>");
+           client.println("</HEAD>");
+           client.println("<BODY>");
+           client.println("<H1>Welcome to Mimi transportor ,How can I help</H1>");
+           client.println("<hr />");
+           client.println("<br />");  
+           client.println("<H2>I can transport your bagages </H2>");
+           client.println("<br />");  
+           client.println("<br />");     
+           client.println("<br />"); 
+           client.println("<a href=\"/?cmd=1\"\">Come</a>");
+           client.println("<a href=\"/?cmd=2\"\">Go</a><br />"); 
+           client.println("<br />");     
+           client.println("<br />"); client.println("<br />");     
+           client.println("<br />"); 
+             client.println("<a href=\"/?cmd=3\"\">Turn Left</a>");
+           client.println("<a href=\"/?cmd=3\"\">Turn Right</a><br />"); 
+            client.println("<br />");  
+           client.println("<br />");     
+           client.println("<br />"); 
+           client.println("<br />");  
+           client.println("<br />");     
+           client.println("<br />"); 
+           client.println("<p>Realized By Manel Rabhi & Sirine Abichou</p>");  
+           client.println("<br />"); 
+           client.println("</BODY>");
+           client.println("</HTML>");
+          break;
+        }
+        if (c == '\n') {
+          // you're starting a new line
+          currentLineIsBlank = true;
+        } else if (c != '\r') {
+          // you've gotten a character on the current line
+          currentLineIsBlank = false;
+        }
+      }
+    }
+    // give the web browser time to receive the data
+    delay(1);
+    // close the connection:
+    client.stop();
+if (readString.indexOf("?cmd=1") >0){
+
+              
+if (distance > seuil){
+       while(distance > seuil){
+     
+           analogWrite(En1, Mspeed);
+           digitalWrite(come1, HIGH);
+                digitalWrite(come2, LOW);
+
+ look();
+    if (distance <= seuil){
+              
+               analogWrite(En2, Mspeed);
+               digitalWrite(turn2, HIGH);
+                digitalWrite(turn1, LOW);
+                delay(400);
+                 digitalWrite(turn2, LOW);
+                digitalWrite(turn1, LOW);
+               delay(4000);
+                digitalWrite(come1, LOW);
+                digitalWrite(come2, LOW);
+         //  }
+
+if (readString.indexOf("?cmd=2") >0){
+              
+      
+                 analogWrite(En1, Mspeed);
+                 
+               digitalWrite(come1, LOW);
+                digitalWrite(come2, LOW);
+         
+}   
+
+ if (readString.indexOf("?cmd=3") >0){
+
+                 analogWrite(En2, Mspeed);
+               digitalWrite(turn1, HIGH);
+                digitalWrite(turn2, LOW);
+         
+}   
+ if (readString.indexOf("?cmd=4") >0){
+              
+      
+                 analogWrite(En2, Mspeed);
+               digitalWrite(turn2, HIGH);
+                digitalWrite(turn1, LOW);
+             
+        
+}   
+    
+  }
+ 
+}
